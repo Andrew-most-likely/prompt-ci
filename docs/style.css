@@ -108,6 +108,7 @@ nav {
 }
 nav.scrolled {
   background: rgba(5,5,8,0.8);
+  -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
 }
@@ -213,6 +214,7 @@ nav.scrolled {
   color: var(--text-muted);
   margin-bottom: 32px;
   background: rgba(255,255,255,0.02);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
 
@@ -241,6 +243,7 @@ h1 {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  color: transparent;
   background-size: 200% 200%;
   animation: gradient-shift 4s ease infinite;
 }
@@ -440,6 +443,7 @@ h2 {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  color: transparent;
   line-height: 1;
   margin-bottom: 16px;
 }
