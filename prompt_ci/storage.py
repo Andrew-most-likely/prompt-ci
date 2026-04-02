@@ -18,7 +18,7 @@ def save_golden(golden_dir: str, test_name: str, prompt: str, output: str, model
         "output": output,
     }
     path = golden_path(golden_dir, test_name)
-    path.write_text(json.dumps(data, indent=2))
+    path.write_text(json.dumps(data, indent=2), encoding='utf-8')
     return path
 
 
@@ -26,7 +26,7 @@ def load_golden(golden_dir: str, test_name: str) -> dict | None:
     path = golden_path(golden_dir, test_name)
     if not path.exists():
         return None
-    return json.loads(path.read_text())
+    return json.loads(path.read_text(encoding='utf-8'))
 
 
 def _hash(text: str) -> str:

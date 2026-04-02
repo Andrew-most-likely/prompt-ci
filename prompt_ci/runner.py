@@ -5,7 +5,7 @@ from .config import Config, TestCase
 
 def _resolve_text(text: str | None, file: str | None, variables: dict) -> str:
     if file:
-        content = Path(file).read_text()
+        content = Path(file).read_text(encoding='utf-8')
     elif text:
         content = text
     else:

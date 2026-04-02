@@ -43,7 +43,7 @@ def init():
     if p.exists():
         typer.confirm("prompt-ci.yaml already exists. Overwrite?", abort=True)
     p.write_text(INIT_CONFIG)
-    console.print("[green]OK[/green] Created prompt-ci.yaml -- edit your tests and run `prompt-ci record`")
+    console.print("[green]OK[/green] Created prompt-ci.yaml -- edit your tests and run `prompt-drift record`")
 
 
 @app.command()
