@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>prompt-drift — Unit tests for AI prompts</title>
+  <meta name="description" content="Catch AI prompt regressions before your users do. Records golden outputs and semantically checks for drift on every deploy." />
+  <meta property="og:title" content="prompt-drift" />
+  <meta property="og:description" content="Unit tests for AI prompts. Catch regressions before your users do." />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <span class="nav-logo">prompt<span class="accent">-drift</span></span>
+      <div class="nav-links">
+        <a href="#how">How it works</a>
+        <a href="#install">Install</a>
+        <a href="https://github.com/Andrew-most-likely/prompt-ci" target="_blank" class="btn-ghost">GitHub</a>
+        <a href="https://pypi.org/project/prompt-drift/" target="_blank" class="btn-primary">pip install</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="badge">Open Source · MIT License</div>
+    <h1>Unit tests<br/><span class="gradient-text">for AI prompts.</span></h1>
+    <p class="hero-sub">
+      When you tweak a prompt, swap models, or upgrade an API version —
+      how do you know your AI still behaves correctly?
+      <strong>prompt-drift</strong> catches the drift before your users do.
+    </p>
+    <div class="install-box">
+      <span class="install-prefix">$</span>
+      <span class="install-cmd" id="install-cmd">pip install prompt-drift</span>
+      <button class="copy-btn" onclick="copyInstall()" title="Copy">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      </button>
+    </div>
+    <div class="hero-links">
+      <a href="https://github.com/Andrew-most-likely/prompt-ci" target="_blank">View on GitHub →</a>
+      <a href="https://pypi.org/project/prompt-drift/" target="_blank">PyPI →</a>
+    </div>
+  </section>
+
+  <!-- PROBLEM -->
+  <section class="problem">
+    <div class="container">
+      <h2>The problem nobody talks about</h2>
+      <p class="section-sub">You test your code. You don't test your AI.</p>
+      <div class="problem-cards">
+        <div class="problem-card">
+          <div class="problem-icon">✏️</div>
+          <h3>You tweak a prompt</h3>
+          <p>A small wording change silently shifts the output format, tone, or structure.</p>
+        </div>
+        <div class="problem-card">
+          <div class="problem-icon">🔄</div>
+          <h3>You swap models</h3>
+          <p>Moving from GPT-4 to Claude — or to a newer version — changes behavior in subtle ways.</p>
+        </div>
+        <div class="problem-card">
+          <div class="problem-icon">📦</div>
+          <h3>You upgrade an API</h3>
+          <p>Model providers quietly ship changes. Your carefully tuned outputs drift without warning.</p>
+        </div>
+      </div>
+      <div class="problem-result">
+        <span class="problem-result-icon">😬</span>
+        <span>You find out when a user complains.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how" id="how">
+    <div class="container">
+      <h2>How it works</h2>
+      <p class="section-sub">Three commands. Works in any CI pipeline.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-content">
+            <h3>Record golden outputs</h3>
+            <p>Run your prompts once. prompt-drift saves the outputs as your source of truth.</p>
+            <div class="terminal">
+              <div class="terminal-bar">
+                <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+              </div>
+              <pre><code><span class="cmd">$ prompt-drift record</span>
+
+Recording golden outputs (3 tests)
+
+  <span class="ok">OK</span> summarize_bullets  -> .golden/summarize_bullets.json
+     <span class="dim">- Revenue grew 23% YoY
+     - Margins expanded to 18%
+     - Guidance raised for Q4</span>
+
+  <span class="ok">OK</span> sentiment_check    -> .golden/sentiment_check.json
+     <span class="dim">positive</span>
+
+  <span class="ok">OK</span> extract_entities   -> .golden/extract_entities.json
+     <span class="dim">["John Smith", "Acme Corp", "New York"]</span>
+
+<span class="ok">Done.</span> Commit your .golden/ directory.</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-content">
+            <h3>Commit your golden files</h3>
+            <p>The <code>.golden/</code> directory is your locked expected behavior — version controlled, just like your code.</p>
+            <div class="terminal">
+              <div class="terminal-bar">
+                <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+              </div>
+              <pre><code><span class="cmd">$ git add .golden/ && git commit -m "lock golden outputs"</span>
+[main 3f2a1c] lock golden outputs
+ 3 files changed, 87 insertions(+)</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-content">
+            <h3>Check on every PR</h3>
+            <p>prompt-drift re-runs your prompts and semantically scores them against the golden files. Drift fails the build.</p>
+            <div class="terminal">
+              <div class="terminal-bar">
+                <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+              </div>
+              <pre><code><span class="cmd">$ prompt-drift check</span>
+
+Checking prompts (3 tests)
+
+  <span class="ok">PASS</span> summarize_bullets  score=0.91  threshold=0.80  (llm-judge)
+  <span class="fail">FAIL</span> sentiment_check    score=0.42  threshold=0.80  (llm-judge)
+       <span class="dim">Expected: positive</span>
+       <span class="dim">Actual:   The overall sentiment appears quite positive...</span>
+  <span class="ok">PASS</span> extract_entities   score=0.88  threshold=0.80  (llm-judge)
+
+<span class="fail">1/3 tests failed.</span></code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONFIG -->
+  <section class="config-section">
+    <div class="container">
+      <h2>Simple config. Powerful control.</h2>
+      <p class="section-sub">One YAML file defines your entire test suite.</p>
+      <div class="config-split">
+        <div class="config-code">
+          <div class="terminal">
+            <div class="terminal-bar">
+              <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+              <span class="terminal-title">prompt-ci.yaml</span>
+            </div>
+            <pre><code><span class="yaml-key">provider</span>: <span class="yaml-val">anthropic</span>   <span class="dim"># or openai</span>
+<span class="yaml-key">model</span>: <span class="yaml-val">claude-haiku-4-5-20251001</span>
+<span class="yaml-key">threshold</span>: <span class="yaml-val">0.80</span>        <span class="dim"># global default</span>
+<span class="yaml-key">golden_dir</span>: <span class="yaml-val">.golden</span>
+
+<span class="yaml-key">tests</span>:
+  - <span class="yaml-key">name</span>: <span class="yaml-val">summarize_bullets</span>
+    <span class="yaml-key">prompt</span>: <span class="yaml-val">"Summarize in 3 bullet points: {{input}}"</span>
+    <span class="yaml-key">input_file</span>: <span class="yaml-val">inputs/article.txt</span>
+    <span class="yaml-key">threshold</span>: <span class="yaml-val">0.85</span>
+
+  - <span class="yaml-key">name</span>: <span class="yaml-val">sentiment_check</span>
+    <span class="yaml-key">prompt</span>: <span class="yaml-val">"Reply with one word: positive, negative, or neutral."</span>
+    <span class="yaml-key">input</span>: <span class="yaml-val">"I love this product!"</span>
+    <span class="yaml-key">threshold</span>: <span class="yaml-val">0.95</span>
+
+  - <span class="yaml-key">name</span>: <span class="yaml-val">customer_support</span>
+    <span class="yaml-key">prompt_file</span>: <span class="yaml-val">prompts/support.txt</span>
+    <span class="yaml-key">input_file</span>: <span class="yaml-val">inputs/complaint.txt</span></code></pre>
+          </div>
+        </div>
+        <div class="config-features">
+          <div class="config-feature">
+            <div class="cf-icon">🎯</div>
+            <div>
+              <h4>Per-test thresholds</h4>
+              <p>Strict on single-word answers, lenient on open-ended summaries.</p>
+            </div>
+          </div>
+          <div class="config-feature">
+            <div class="cf-icon">📁</div>
+            <div>
+              <h4>File or inline</h4>
+              <p>Reference prompt and input files, or write them inline. Mix and match.</p>
+            </div>
+          </div>
+          <div class="config-feature">
+            <div class="cf-icon">🔀</div>
+            <div>
+              <h4>Variable substitution</h4>
+              <p>Use <code>{{variable}}</code> in prompts. <code>{{input}}</code> is automatically replaced.</p>
+            </div>
+          </div>
+          <div class="config-feature">
+            <div class="cf-icon">🤖</div>
+            <div>
+              <h4>LLM-as-judge scoring</h4>
+              <p>Semantic similarity, not brittle string matching. Catches meaning drift.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CI SECTION -->
+  <section class="ci-section">
+    <div class="container">
+      <h2>Drop into CI in one step</h2>
+      <p class="section-sub">Works with GitHub Actions, GitLab CI, or any pipeline that runs shell commands.</p>
+      <div class="terminal" style="max-width:680px;margin:0 auto;">
+        <div class="terminal-bar">
+          <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+          <span class="terminal-title">.github/workflows/prompt-ci.yml</span>
+        </div>
+        <pre><code><span class="yaml-key">name</span>: <span class="yaml-val">prompt regression</span>
+
+<span class="yaml-key">on</span>: [<span class="yaml-val">push</span>, <span class="yaml-val">pull_request</span>]
+
+<span class="yaml-key">jobs</span>:
+  <span class="yaml-key">check</span>:
+    <span class="yaml-key">runs-on</span>: <span class="yaml-val">ubuntu-latest</span>
+    <span class="yaml-key">steps</span>:
+      - <span class="yaml-key">uses</span>: <span class="yaml-val">actions/checkout@v4</span>
+      - <span class="yaml-key">uses</span>: <span class="yaml-val">actions/setup-python@v5</span>
+        <span class="yaml-key">with</span>:
+          <span class="yaml-key">python-version</span>: <span class="yaml-val">"3.11"</span>
+      - <span class="yaml-key">run</span>: <span class="yaml-val">pip install prompt-drift</span>
+      - <span class="yaml-key">run</span>: <span class="yaml-val">prompt-drift check</span>
+        <span class="yaml-key">env</span>:
+          <span class="yaml-key">ANTHROPIC_API_KEY</span>: <span class="yaml-val">${{ secrets.ANTHROPIC_API_KEY }}</span></code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSTALL -->
+  <section class="install-section" id="install">
+    <div class="container">
+      <h2>Get started in 60 seconds</h2>
+      <div class="install-steps">
+        <div class="install-step">
+          <div class="install-step-num">1</div>
+          <div>
+            <div class="terminal inline-terminal">
+              <pre><code><span class="cmd">pip install prompt-drift</span></code></pre>
+            </div>
+          </div>
+        </div>
+        <div class="install-step">
+          <div class="install-step-num">2</div>
+          <div>
+            <div class="terminal inline-terminal">
+              <pre><code><span class="cmd">prompt-drift init</span>
+<span class="dim"># edit the generated prompt-ci.yaml</span></code></pre>
+            </div>
+          </div>
+        </div>
+        <div class="install-step">
+          <div class="install-step-num">3</div>
+          <div>
+            <div class="terminal inline-terminal">
+              <pre><code><span class="cmd">prompt-drift record</span>
+<span class="dim"># commit .golden/ to git</span></code></pre>
+            </div>
+          </div>
+        </div>
+        <div class="install-step">
+          <div class="install-step-num">4</div>
+          <div>
+            <div class="terminal inline-terminal">
+              <pre><code><span class="cmd">prompt-drift check</span>
+<span class="dim"># run this in CI on every PR</span></code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="install-cta">
+        <a href="https://github.com/Andrew-most-likely/prompt-ci" target="_blank" class="btn-large-ghost">View on GitHub</a>
+        <a href="https://pypi.org/project/prompt-drift/" target="_blank" class="btn-large">PyPI →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <span class="nav-logo">prompt<span class="accent">-drift</span></span>
+        <span class="footer-links">
+          <a href="https://github.com/Andrew-most-likely/prompt-ci" target="_blank">GitHub</a>
+          <a href="https://pypi.org/project/prompt-drift/" target="_blank">PyPI</a>
+          <a href="https://github.com/Andrew-most-likely/prompt-ci/issues" target="_blank">Issues</a>
+        </span>
+        <span class="footer-copy">MIT License</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function copyInstall() {
+      navigator.clipboard.writeText('pip install prompt-drift');
+      const btn = document.querySelector('.copy-btn');
+      btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
+      setTimeout(() => {
+        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>';
+      }, 2000);
+    }
+  </script>
+</body>
+</html>
