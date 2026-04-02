@@ -2,7 +2,7 @@
 
 **Unit tests for AI prompts.** Catch regressions before your users do.
 
-When you tweak a prompt, swap models, or upgrade an API version — how do you know your AI still behaves correctly? `prompt-ci` records your expected outputs as golden files and checks every future run against them using semantic similarity.
+When you tweak a prompt, swap models, or upgrade an API version - how do you know your AI still behaves correctly? `prompt-ci` records your expected outputs as golden files and checks every future run against them using semantic similarity.
 
 ```bash
 pip install prompt-ci
@@ -20,7 +20,7 @@ You ship an AI feature. It works great. Then you:
 - Switch from GPT-4 to Claude
 - Upgrade to a new model version
 
-Suddenly outputs drift — wrong format, different tone, missing information. **You find out when a user complains.**
+Suddenly outputs drift - wrong format, different tone, missing information. **You find out when a user complains.**
 
 `prompt-ci` solves this the same way unit tests solve code regressions.
 
@@ -56,7 +56,7 @@ tests:
     threshold: 0.85
 
   - name: sentiment_check
-    prompt: "Reply with one word — positive, negative, or neutral:"
+    prompt: "Reply with one word - positive, negative, or neutral:"
     input: "I love this product!"
     threshold: 0.95
 ```
@@ -68,7 +68,7 @@ export ANTHROPIC_API_KEY=sk-...
 prompt-ci record
 ```
 
-This saves outputs to `.golden/`. **Commit this directory** — it's your source of truth.
+This saves outputs to `.golden/`. **Commit this directory** - it's your source of truth.
 
 ### 4. Check for regressions
 
@@ -87,7 +87,7 @@ Checking prompts (2 tests)
 1/2 tests failed.
 ```
 
-Exit code `1` on any failure — drop straight into CI.
+Exit code `1` on any failure - drop straight into CI.
 
 ### 5. Add to GitHub Actions
 
@@ -160,7 +160,7 @@ tests:
 ## FAQ
 
 **Does this cost money to run?**
-Yes — it calls your LLM provider twice per test (once to get the output, once for the LLM judge). Use `claude-haiku` or `gpt-4o-mini` to minimize cost.
+Yes - it calls your LLM provider twice per test (once to get the output, once for the LLM judge). Use `claude-haiku` or `gpt-4o-mini` to minimize cost.
 
 **Should I commit `.golden/`?**
 Yes. Golden files are your locked expected behavior. Treat them like snapshots in a snapshot testing framework.
@@ -169,7 +169,7 @@ Yes. Golden files are your locked expected behavior. Treat them like snapshots i
 Re-run `prompt-ci record` after your change. The new output becomes the new golden file.
 
 **Can I use it without a CI system?**
-Absolutely — run `prompt-ci check` locally before any deploy.
+Absolutely - run `prompt-ci check` locally before any deploy.
 
 ---
 
