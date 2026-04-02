@@ -1,0 +1,34 @@
+import json
+from pathlib import Path
+from datetime import datetime
+
+
+def golden_path(golden_dir: str, test_name: str) -> Path:
+    return Path(golden_dir) / f"{test_name}.json"
+
+
+def save_golden(golden_dir: str, test_name: str, prompt: str, output: str, model: str, provider: str):
+    Path(golden_dir).mkdir(parents=True, exist_ok=True)
+    data = {
+        "test_name": test_name,
+        "provider": provider,
+        "model": model,
+        "recorded_at": datetime.utcnow().isoformat() + "Z",
+        "prompt_hash": _hash(prompt),
+        "output": output,
+    }
+    path = golden_path(golden_dir, test_name)
+    path.write_text(json.dumps(data, indent=2))
+    return path
+
+
+def load_golden(golden_dir: str, test_name: str) -> dict | None:
+    path = golden_path(golden_dir, test_name)
+    if not path.exists():
+        return None
+    return json.loads(path.read_text())
+
+
+def _hash(text: str) -> str:
+    import hashlib
+    return hashlib.sha256(text.encode()).hexdigest()[:12]
