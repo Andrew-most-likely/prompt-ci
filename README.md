@@ -1,14 +1,14 @@
-# prompt-ci
+# prompt-drift
 
 **Unit tests for AI prompts.** Catch regressions before your users do.
 
-When you tweak a prompt, swap models, or upgrade an API version - how do you know your AI still behaves correctly? `prompt-ci` records your expected outputs as golden files and checks every future run against them using semantic similarity.
+When you tweak a prompt, swap models, or upgrade an API version - how do you know your AI still behaves correctly? `prompt-drift` records your expected outputs as golden files and checks every future run against them using semantic similarity.
 
 ```bash
-pip install prompt-ci
-prompt-ci init
-prompt-ci record   # capture golden outputs
-prompt-ci check    # verify nothing regressed (run this in CI)
+pip install prompt-drift
+prompt-drift init
+prompt-drift record   # capture golden outputs
+prompt-drift check    # verify nothing regressed (run this in CI)
 ```
 
 ---
@@ -22,7 +22,7 @@ You ship an AI feature. It works great. Then you:
 
 Suddenly outputs drift - wrong format, different tone, missing information. **You find out when a user complains.**
 
-`prompt-ci` solves this the same way unit tests solve code regressions.
+`prompt-drift` solves this the same way unit tests solve code regressions.
 
 ---
 
@@ -31,15 +31,15 @@ Suddenly outputs drift - wrong format, different tone, missing information. **Yo
 ### 1. Install
 
 ```bash
-pip install prompt-ci
+pip install prompt-drift
 # For OpenAI support:
-pip install "prompt-ci[openai]"
+pip install "prompt-drift[openai]"
 ```
 
 ### 2. Init a config
 
 ```bash
-prompt-ci init
+prompt-drift init
 ```
 
 Edit the generated `prompt-ci.yaml`:
@@ -65,7 +65,7 @@ tests:
 
 ```bash
 export ANTHROPIC_API_KEY=sk-...
-prompt-ci record
+prompt-drift record
 ```
 
 This saves outputs to `.golden/`. **Commit this directory** - it's your source of truth.
@@ -73,7 +73,7 @@ This saves outputs to `.golden/`. **Commit this directory** - it's your source o
 ### 4. Check for regressions
 
 ```bash
-prompt-ci check
+prompt-drift check
 ```
 
 ```
@@ -95,7 +95,7 @@ Exit code `1` on any failure - drop straight into CI.
 - name: Run prompt regression tests
   env:
     ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-  run: prompt-ci check
+  run: prompt-drift check
 ```
 
 ---
@@ -104,23 +104,23 @@ Exit code `1` on any failure - drop straight into CI.
 
 | Command | Description |
 |---|---|
-| `prompt-ci init` | Create starter `prompt-ci.yaml` |
-| `prompt-ci record` | Run all prompts, save golden outputs |
-| `prompt-ci check` | Compare current outputs to golden, exit 1 on fail |
-| `prompt-ci show <name>` | Print the stored golden output for a test |
+| `prompt-drift init` | Create starter `prompt-ci.yaml` |
+| `prompt-drift record` | Run all prompts, save golden outputs |
+| `prompt-drift check` | Compare current outputs to golden, exit 1 on fail |
+| `prompt-drift show <name>` | Print the stored golden output for a test |
 
 ### Options
 
 ```bash
-prompt-ci check --verbose        # show expected vs actual for all tests
-prompt-ci check --config path/to/prompt-ci.yaml   # custom config path
+prompt-drift check --verbose        # show expected vs actual for all tests
+prompt-drift check --config path/to/prompt-ci.yaml   # custom config path
 ```
 
 ---
 
 ## How similarity scoring works
 
-By default, `prompt-ci` uses an **LLM-as-judge** to score semantic similarity between your golden output and the actual output. The judge rates on a 0.0–1.0 scale considering meaning, structure, and completeness.
+By default, `prompt-drift` uses an **LLM-as-judge** to score semantic similarity between your golden output and the actual output. The judge rates on a 0.0–1.0 scale considering meaning, structure, and completeness.
 
 If the LLM judge fails (network error, etc.), it falls back to **token overlap** (Jaccard similarity) as a safety net.
 
@@ -166,10 +166,10 @@ Yes - it calls your LLM provider twice per test (once to get the output, once fo
 Yes. Golden files are your locked expected behavior. Treat them like snapshots in a snapshot testing framework.
 
 **What if I intentionally change a prompt?**
-Re-run `prompt-ci record` after your change. The new output becomes the new golden file.
+Re-run `prompt-drift record` after your change. The new output becomes the new golden file.
 
 **Can I use it without a CI system?**
-Absolutely - run `prompt-ci check` locally before any deploy.
+Absolutely - run `prompt-drift check` locally before any deploy.
 
 ---
 
