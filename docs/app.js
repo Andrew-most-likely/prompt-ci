@@ -2,81 +2,85 @@
    PARTICLE CANVAS BACKGROUND
    ============================================ */
 const canvas = document.getElementById('bg-canvas');
-const ctx = canvas.getContext('2d');
+const isMobile = window.matchMedia('(max-width: 768px)').matches;
+const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-let particles = [];
-let mouse = { x: -9999, y: -9999 };
+if (!isMobile && !prefersReduced) {
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  const mouse = { x: -9999, y: -9999 };
 
-function resize() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-resize();
-window.addEventListener('resize', () => { resize(); initParticles(); });
-window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
-
-function initParticles() {
-  particles = [];
-  const count = Math.floor((window.innerWidth * window.innerHeight) / 14000);
-  for (let i = 0; i < count; i++) {
-    particles.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.3,
-      vy: (Math.random() - 0.5) * 0.3,
-      r: Math.random() * 1.5 + 0.5,
-      opacity: Math.random() * 0.5 + 0.1,
-    });
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
   }
-}
-initParticles();
+  resize();
+  window.addEventListener('resize', () => { resize(); initParticles(); });
+  window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
 
-function drawParticles() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  for (let i = 0; i < particles.length; i++) {
-    const p = particles[i];
-    p.x += p.vx;
-    p.y += p.vy;
-    if (p.x < 0) p.x = canvas.width;
-    if (p.x > canvas.width) p.x = 0;
-    if (p.y < 0) p.y = canvas.height;
-    if (p.y > canvas.height) p.y = 0;
-
-    // Mouse repulsion
-    const dx = p.x - mouse.x;
-    const dy = p.y - mouse.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    if (dist < 120) {
-      const force = (120 - dist) / 120;
-      p.x += dx * force * 0.03;
-      p.y += dy * force * 0.03;
+  function initParticles() {
+    particles = [];
+    const count = Math.floor((window.innerWidth * window.innerHeight) / 14000);
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        r: Math.random() * 1.5 + 0.5,
+        opacity: Math.random() * 0.5 + 0.1,
+      });
     }
+  }
+  initParticles();
 
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(124,106,247,${p.opacity})`;
-    ctx.fill();
+  function drawParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Connect nearby particles
-    for (let j = i + 1; j < particles.length; j++) {
-      const p2 = particles[j];
-      const dx2 = p.x - p2.x;
-      const dy2 = p.y - p2.y;
-      const d = Math.sqrt(dx2 * dx2 + dy2 * dy2);
-      if (d < 100) {
-        ctx.beginPath();
-        ctx.moveTo(p.x, p.y);
-        ctx.lineTo(p2.x, p2.y);
-        ctx.strokeStyle = `rgba(124,106,247,${0.12 * (1 - d / 100)})`;
-        ctx.lineWidth = 0.5;
-        ctx.stroke();
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0) p.x = canvas.width;
+      if (p.x > canvas.width) p.x = 0;
+      if (p.y < 0) p.y = canvas.height;
+      if (p.y > canvas.height) p.y = 0;
+
+      // Mouse repulsion
+      const dx = p.x - mouse.x;
+      const dy = p.y - mouse.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 120) {
+        const force = (120 - dist) / 120;
+        p.x += dx * force * 0.03;
+        p.y += dy * force * 0.03;
+      }
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(124,106,247,${p.opacity})`;
+      ctx.fill();
+
+      // Connect nearby particles
+      for (let j = i + 1; j < particles.length; j++) {
+        const p2 = particles[j];
+        const dx2 = p.x - p2.x;
+        const dy2 = p.y - p2.y;
+        const d = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+        if (d < 100) {
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.strokeStyle = `rgba(124,106,247,${0.12 * (1 - d / 100)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
       }
     }
+    requestAnimationFrame(drawParticles);
   }
-  requestAnimationFrame(drawParticles);
+  drawParticles();
 }
-drawParticles();
 
 /* ============================================
    NAV SCROLL EFFECT
@@ -125,7 +129,6 @@ function typeTerminal(terminal) {
   });
 }
 
-// Trigger typing when terminal enters view
 const terminalObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting && !entry.target.dataset.typed) {
