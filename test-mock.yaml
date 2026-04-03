@@ -1,0 +1,13 @@
+provider: mock
+model: mock
+threshold: 0.60
+golden_dir: .golden-test
+
+tests:
+  - name: summarize_bullets
+    prompt: "Summarize in bullet points: {{input}}"
+    input: "The sky is blue. The grass is green. The sun is bright."
+
+  - name: sentiment_check
+    prompt: "What is the sentiment of this text?"
+    input: "I love this product!"

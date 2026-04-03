@@ -8,4 +8,3 @@ venv/
 .env
 *.golden-test/
 prompt-ci.yaml
-test-mock.yaml
