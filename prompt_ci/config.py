@@ -1,7 +1,8 @@
-import yaml
-from pathlib import Path
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Optional
+
+import yaml
 
 
 @dataclass
@@ -27,7 +28,7 @@ class Config:
 def load_config(path: str = "prompt-ci.yaml") -> Config:
     p = Path(path)
     if not p.exists():
-        raise FileNotFoundError(f"Config not found: {path}\nRun `prompt-ci init` to create one.")
+        raise FileNotFoundError(f"Config not found: {path}\nRun `prompt-drift init` to create one.")
 
     with open(p) as f:
         raw = yaml.safe_load(f)

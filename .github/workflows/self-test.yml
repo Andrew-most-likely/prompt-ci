@@ -1,25 +1,46 @@
-name: prompt-ci self-test
+name: prompt-drift self-test
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
 
 jobs:
   prompt-regression:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Install prompt-drift (local)
+        run: pip install -e ".[dev]"
+
+      - name: Run unit tests
+        run: pytest
+
+      - name: Run mock regression tests
+        run: prompt-drift check --config test-mock.yaml
+
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
+          cache: "pip"
 
-      - name: Install prompt-ci
-        run: pip install prompt-ci
+      - name: Install ruff
+        run: pip install ruff
 
-      - name: Run prompt regression tests
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          # OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: prompt-ci check
+      - name: Lint
+        run: ruff check prompt_ci/

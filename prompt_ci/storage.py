@@ -1,6 +1,6 @@
 import json
+from datetime import datetime, timezone
 from pathlib import Path
-from datetime import datetime
 
 
 def golden_path(golden_dir: str, test_name: str) -> Path:
@@ -13,7 +13,7 @@ def save_golden(golden_dir: str, test_name: str, prompt: str, output: str, model
         "test_name": test_name,
         "provider": provider,
         "model": model,
-        "recorded_at": datetime.utcnow().isoformat() + "Z",
+        "recorded_at": datetime.now(timezone.utc).isoformat(),
         "prompt_hash": _hash(prompt),
         "output": output,
     }

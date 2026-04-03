@@ -1,5 +1,10 @@
 # prompt-drift
 
+[![CI](https://github.com/Andrew-most-likely/prompt-ci/actions/workflows/self-test.yml/badge.svg)](https://github.com/Andrew-most-likely/prompt-ci/actions/workflows/self-test.yml)
+[![PyPI](https://img.shields.io/pypi/v/prompt-drift)](https://pypi.org/project/prompt-drift/)
+[![Python](https://img.shields.io/pypi/pyversions/prompt-drift)](https://pypi.org/project/prompt-drift/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 **Unit tests for AI prompts.** Catch regressions before your users do.
 
 When you tweak a prompt, swap models, or upgrade an API version - how do you know your AI still behaves correctly? `prompt-drift` records your expected outputs as golden files and checks every future run against them using semantic similarity.

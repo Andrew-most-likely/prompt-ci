@@ -2,6 +2,7 @@
 Semantic similarity via LLM-as-judge.
 Falls back to token overlap if judge fails.
 """
+import warnings
 
 JUDGE_PROMPT = """You are a semantic similarity judge.
 
@@ -36,7 +37,8 @@ def score_similarity(expected: str, actual: str, provider: str, model: str) -> t
     try:
         score = _llm_judge(expected, actual, provider, model)
         return score, "llm-judge"
-    except Exception:
+    except Exception as e:
+        warnings.warn(f"LLM judge failed ({e}); falling back to token-overlap scoring.", stacklevel=2)
         score = _token_overlap(expected, actual)
         return score, "token-overlap"
 
@@ -61,7 +63,10 @@ def _llm_judge(expected: str, actual: str, provider: str, model: str) -> float:
             max_tokens=10,
             messages=[{"role": "user", "content": prompt}],
         )
-        raw = resp.choices[0].message.content.strip()
+        content = resp.choices[0].message.content
+        if content is None:
+            raise ValueError("OpenAI returned empty judge response.")
+        raw = content.strip()
     else:
         raise ValueError(f"Unknown provider: {provider}")
 

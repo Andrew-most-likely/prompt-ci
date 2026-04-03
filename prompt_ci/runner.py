@@ -1,5 +1,5 @@
-import re
 from pathlib import Path
+
 from .config import Config, TestCase
 
 
@@ -68,4 +68,7 @@ def _run_openai(prompt: str, model: str) -> str:
         model=model,
         messages=[{"role": "user", "content": prompt}],
     )
-    return response.choices[0].message.content
+    content = response.choices[0].message.content
+    if content is None:
+        raise ValueError("OpenAI returned an empty response (possible content filter or tool call).")
+    return content

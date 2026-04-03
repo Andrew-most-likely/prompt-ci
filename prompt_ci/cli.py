@@ -1,15 +1,12 @@
-import sys
-import typer
 from pathlib import Path
-from typing import Optional
+
+import typer
 from rich.console import Console
-from rich.table import Table
-from rich import print as rprint
 
 from .config import load_config
 from .runner import build_prompt, run_prompt
-from .storage import save_golden, load_golden
 from .similarity import score_similarity
+from .storage import load_golden, save_golden
 
 app = typer.Typer(help="Prompt Regression CI -- catch when your AI stops behaving as expected.")
 console = Console()
@@ -81,7 +78,7 @@ def check(
         golden = load_golden(config.golden_dir, test.name)
 
         if golden is None:
-            console.print(f"  [yellow]WARN[/yellow] [cyan]{test.name}[/cyan] -- no golden file, run `prompt-ci record` first")
+            console.print(f"  [yellow]WARN[/yellow] [cyan]{test.name}[/cyan] -- no golden file, run `prompt-drift record` first")
             results.append((test.name, None, None, threshold, "no-golden"))
             failed += 1
             continue
@@ -99,8 +96,10 @@ def check(
         console.print(f"  {status} [cyan]{test.name}[/cyan]  score={score:.2f}  threshold={threshold:.2f}  ({method})")
 
         if verbose or not passed:
-            console.print(f"    [dim]Expected:[/dim] {golden['output'][:100].strip()}...")
-            console.print(f"    [dim]Actual:  [/dim] {actual[:100].strip()}...")
+            expected_preview = golden['output'][:100].strip()
+            actual_preview = actual[:100].strip()
+            console.print(f"    [dim]Expected:[/dim] {expected_preview}{'...' if len(golden['output']) > 100 else ''}")
+            console.print(f"    [dim]Actual:  [/dim] {actual_preview}{'...' if len(actual) > 100 else ''}")
             console.print()
 
         results.append((test.name, score, passed, threshold, method))
@@ -130,7 +129,6 @@ def show(
 
 def _print_summary(results, failed):
     total = len(results)
-    passed = total - failed
     console.print()
     if failed == 0:
         console.print(f"[bold green]All {total} tests passed.[/bold green]")
