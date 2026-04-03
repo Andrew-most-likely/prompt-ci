@@ -6,5 +6,5 @@ build/
 .venv/
 venv/
 .env
-*.golden-test/
+.golden/
 prompt-ci.yaml

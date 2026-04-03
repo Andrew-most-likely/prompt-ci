@@ -1,0 +1,8 @@
+{
+  "test_name": "summarize_bullets",
+  "provider": "mock",
+  "model": "mock",
+  "recorded_at": "2026-04-02T19:11:02.971504Z",
+  "prompt_hash": "b248dc30ce4f",
+  "output": "- First key point from the text\n- Second key point from the text\n- Third key point from the text"
+}
